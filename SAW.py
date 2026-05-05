@@ -63,7 +63,7 @@ def input_alternatif(n_kriteria, kriteria):
                 continue
             break
         except ValueError:
-            print("  Input tidak valid! Masukkan angka bulat.")
+            print("Input tidak valid! Masukkan angka bulat.")
 
     nama_alt = []
     matriks = []
