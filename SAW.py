@@ -200,3 +200,6 @@ def main():
 
     # Tampilkan hasil
     tampilkan_hasil(nama_alt, kriteria, atribut, bobot, bobot_normal, matriks, matriks_normal, nilai_v)
+    
+if __name__ == "__main__":
+    main()
