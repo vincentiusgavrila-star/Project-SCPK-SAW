@@ -458,7 +458,7 @@ with tab4:
             "1232401620"
         ],
         "Peran": [
-            "Rusher",
+            "Setter",
             "Libero"
         ]
     })
