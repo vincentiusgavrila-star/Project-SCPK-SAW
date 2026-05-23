@@ -450,16 +450,16 @@ with tab4:
 
     anggota = pd.DataFrame({
         "Nama": [
-            "Nama Anggota 1",
-            "Nama Anggota 2"
+            "Vincentius Gavrila Subagyo",
+            "Sebastian Alvaro Huller"
         ],
         "NIM": [
-            "123456789",
-            "123456780"
+            "123240146",
+            "1232401620"
         ],
         "Peran": [
-            "Ketua",
-            "Anggota"
+            "Rusher",
+            "Libero"
         ]
     })
 
