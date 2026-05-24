@@ -50,50 +50,7 @@ h1, h2, h3 {
 # =========================================================
 # LOAD DATA
 # =========================================================
-@st.cache_data
-def load_data():
-    try:
-        df = pd.read_csv("BankChurners.csv")
-    except:
-        np.random.seed(42)
-
-        n = 500
-
-        df = pd.DataFrame({
-            'CLIENTNUM': np.arange(700000000, 700000000+n),
-            'Attrition_Flag': np.random.choice(
-                ['Existing Customer', 'Attrited Customer'],
-                n,
-                p=[0.84, 0.16]
-            ),
-            'Customer_Age': np.random.randint(26, 73, n),
-            'Gender': np.random.choice(['M', 'F'], n),
-            'Education_Level': np.random.choice([
-                'Graduate',
-                'High School',
-                'College',
-                'Unknown'
-            ], n),
-            'Income_Category': np.random.choice([
-                'Less than $40K',
-                '$40K - $60K',
-                '$60K - $80K',
-                '$80K - $120K',
-                '$120K +'
-            ], n),
-            'Credit_Limit': np.random.uniform(1000, 35000, n),
-            'Total_Trans_Amt': np.random.randint(500, 18000, n),
-            'Total_Trans_Ct': np.random.randint(10, 140, n),
-            'Months_on_book': np.random.randint(13, 56, n),
-            'Avg_Utilization_Ratio': np.random.uniform(0, 1, n),
-            'Total_Relationship_Count': np.random.randint(1, 6, n),
-            'Contacts_Count_12_mon': np.random.randint(0, 6, n),
-            'Months_Inactive_12_mon': np.random.randint(0, 6, n),
-        })
-
-    return df
-
-df_raw = load_data()
+df = pd.read_csv("BankChurners.csv")
 
 # =========================================================
 # KRITERIA SAW
@@ -129,13 +86,13 @@ DEFAULT_WEIGHTS = [0.20,0.25,0.15,0.10,0.10,0.10,0.05,0.05]
 # =========================================================
 # HEADER
 # =========================================================
-st.title("💳 Sistem Pendukung Keputusan Nasabah Kartu Kredit")
+st.title("Sistem Pendukung Keputusan Nasabah Kartu Kredit")
 st.write("Metode Simple Additive Weighting (SAW)")
 
 # =========================================================
 # SIDEBAR
 # =========================================================
-st.sidebar.header("⚙️ Pengaturan Bobot")
+st.sidebar.header("Pengaturan Bobot")
 
 weights = []
 
@@ -163,18 +120,18 @@ top_n = st.sidebar.number_input(
 sample_n = st.sidebar.number_input(
     "Jumlah Data Sampel",
     50,
-    len(df_raw),
-    min(500, len(df_raw))
+    len(df),
+    min(500, len(df))
 )
 
 # =========================================================
 # TABS
 # =========================================================
 tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 Dataset",
-    "⚙️ Perhitungan SAW",
-    "📈 Visualisasi",
-    "👥 Profil Kelompok"
+    "Dataset",
+    "Perhitungan SAW",
+    "Visualisasi",
+    "Profil Kelompok"
 ])
 
 # =========================================================
@@ -187,22 +144,22 @@ with tab1:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.metric("Jumlah Data", len(df_raw))
+        st.metric("Jumlah Data", len(df))
 
     with col2:
-        st.metric("Jumlah Kolom", len(df_raw.columns))
+        st.metric("Jumlah Kolom", len(df.columns))
 
     with col3:
         st.metric("Jumlah Kriteria", len(CRITERIA_COLS))
 
     st.subheader("Dataset")
 
-    st.dataframe(df_raw.head(100), use_container_width=True)
+    st.dataframe(df.head(100), use_container_width=True)
 
     st.subheader("Statistik Deskriptif")
 
     st.dataframe(
-        df_raw[CRITERIA_COLS].describe(),
+        df[CRITERIA_COLS].describe(),
         use_container_width=True
     )
 
@@ -213,7 +170,7 @@ with tab1:
 
     fig, ax = plt.subplots()
 
-    vals = df_raw['Attrition_Flag'].value_counts()
+    vals = df['Attrition_Flag'].value_counts()
 
     ax.pie(
         vals,
@@ -231,7 +188,7 @@ with tab1:
     fig, ax = plt.subplots(figsize=(10,4))
 
     ax.hist(
-        df_raw['Customer_Age'],
+        df['Customer_Age'],
         bins=20
     )
 
@@ -247,7 +204,7 @@ with tab1:
 
     fig, ax = plt.subplots()
 
-    gender = df_raw['Gender'].value_counts()
+    gender = df['Gender'].value_counts()
 
     ax.bar(
         gender.index,
@@ -284,7 +241,7 @@ with tab2:
 
     if run_saw:
 
-        df_sample = df_raw.sample(
+        df_sample = df.sample(
             n=int(sample_n),
             random_state=42
         ).copy()
@@ -375,7 +332,7 @@ with tab3:
 
     fig, ax = plt.subplots(figsize=(10,6))
 
-    corr = df_raw[CRITERIA_COLS].corr()
+    corr = df[CRITERIA_COLS].corr()
 
     sns.heatmap(
         corr,
@@ -393,7 +350,7 @@ with tab3:
 
     fig, ax = plt.subplots(figsize=(12,5))
 
-    df_raw[CRITERIA_COLS].boxplot(ax=ax)
+    df[CRITERIA_COLS].boxplot(ax=ax)
 
     plt.xticks(rotation=20)
 
@@ -407,9 +364,9 @@ with tab3:
     fig, ax = plt.subplots(figsize=(10,5))
 
     scatter = ax.scatter(
-        df_raw['Credit_Limit'],
-        df_raw['Total_Trans_Amt'],
-        c=df_raw['Avg_Utilization_Ratio'],
+        df['Credit_Limit'],
+        df['Total_Trans_Amt'],
+        c=df['Avg_Utilization_Ratio'],
         cmap='viridis'
     )
 
@@ -455,7 +412,7 @@ with tab4:
         ],
         "NIM": [
             "123240146",
-            "1232401620"
+            "123240162"
         ],
         "Peran": [
             "Setter",
