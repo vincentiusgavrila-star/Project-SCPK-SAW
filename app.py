@@ -92,72 +92,31 @@ st.write("Metode Simple Additive Weighting (SAW)")
 # =========================================================
 # SIDEBAR
 # =========================================================
-st.sidebar.header("Pengaturan Bobot")
+st.sidebar.title("Menu Navigasi")
 
-weights = []
-
-for i, label in enumerate(CRITERIA_LABELS):
-    w = st.sidebar.slider(
-        label,
-        0.0,
-        1.0,
-        float(DEFAULT_WEIGHTS[i]),
-        0.01
-    )
-    weights.append(w)
-
-total_weight = sum(weights)
-
-st.sidebar.write(f"### Total Bobot = {total_weight:.2f}")
-
-top_n = st.sidebar.number_input(
-    "Jumlah Top Ranking",
-    5,
-    50,
-    10
+menu = st.sidebar.radio(
+    "",
+    ["Dataset", "Perhitungan SAW", "Visualisasi", "Profil Kelompok"]
 )
-
-sample_n = st.sidebar.number_input(
-    "Jumlah Data Sampel",
-    50,
-    len(df),
-    min(500, len(df))
-)
-
-# =========================================================
-# TABS
-# =========================================================
-tab1, tab2, tab3, tab4 = st.tabs([
-    "Dataset",
-    "Perhitungan SAW",
-    "Visualisasi",
-    "Profil Kelompok"
-])
 
 # =========================================================
 # TAB 1
 # =========================================================
-with tab1:
-
+if menu == "Dataset":
     st.subheader("Informasi Dataset")
 
     col1, col2, col3 = st.columns(3)
-
     with col1:
         st.metric("Jumlah Data", len(df))
-
     with col2:
         st.metric("Jumlah Kolom", len(df.columns))
-
     with col3:
         st.metric("Jumlah Kriteria", len(CRITERIA_COLS))
 
     st.subheader("Dataset")
-
     st.dataframe(df.head(100), use_container_width=True)
 
     st.subheader("Statistik Deskriptif")
-
     st.dataframe(
         df[CRITERIA_COLS].describe(),
         use_container_width=True
@@ -167,61 +126,85 @@ with tab1:
     # PIE CHART
     # =====================================================
     st.subheader("Distribusi Status Nasabah")
-
     fig, ax = plt.subplots()
-
     vals = df['Attrition_Flag'].value_counts()
-
     ax.pie(
         vals,
         labels=vals.index,
         autopct='%1.1f%%'
     )
-
     st.pyplot(fig)
 
     # =====================================================
     # HISTOGRAM
     # =====================================================
     st.subheader("Distribusi Umur Nasabah")
-
     fig, ax = plt.subplots(figsize=(10,4))
-
     ax.hist(
         df['Customer_Age'],
         bins=20
     )
-
     ax.set_xlabel("Umur")
     ax.set_ylabel("Jumlah")
-
     st.pyplot(fig)
 
     # =====================================================
     # GENDER
     # =====================================================
     st.subheader("Distribusi Gender")
-
     fig, ax = plt.subplots()
-
     gender = df['Gender'].value_counts()
-
     ax.bar(
         gender.index,
         gender.values
     )
-
     ax.set_xlabel("Gender")
     ax.set_ylabel("Jumlah")
-
     st.pyplot(fig)
 
 # =========================================================
 # TAB 2
 # =========================================================
-with tab2:
-
+elif menu == "Perhitungan SAW":
     st.subheader("Bobot Kriteria")
+
+    # Input Bobot
+    weights = []
+    cols = st.columns(len(CRITERIA_LABELS))
+    
+    for i, label in enumerate(CRITERIA_LABELS):
+        with cols[i]:
+            w = st.slider(
+                label,
+                0.0,
+                1.0,
+                float(DEFAULT_WEIGHTS[i]),
+                0.01
+            )
+            weights.append(w)
+
+    total_weight = sum(weights)
+    st.write(f"Total Bobot = {total_weight:.2f}")
+    
+    if abs(total_weight - 1.0) > 0.01:
+        st.warning("Total bobot sebaiknya = 1.0 untuk hasil yang akurat.")
+
+    # Input Parameter Sampling & Ranking
+    col_param1, col_param2 = st.columns(2)
+    with col_param1:
+        sample_n = st.number_input(
+            "Jumlah Data Sampel",
+            min_value=50,
+            max_value=len(df),
+            value=min(500, len(df))
+        )
+    with col_param2:
+        top_n = st.number_input(
+            "Jumlah Top Ranking",
+            min_value=5,
+            max_value=50,
+            value=10
+        )
 
     weight_df = pd.DataFrame({
         "Kriteria": CRITERIA_LABELS,
@@ -238,18 +221,13 @@ with tab2:
         st.warning("Total bobot sebaiknya = 1")
 
     run_saw = st.button("Hitung SAW")
-
     if run_saw:
-
         df_sample = df.sample(
             n=int(sample_n),
             random_state=42
         ).copy()
-
         x = df_sample[CRITERIA_COLS].values.astype(float)
-
         m, n = x.shape
-
         r = np.zeros((m, n))
 
         # =================================================
@@ -326,7 +304,7 @@ with tab2:
 # =========================================================
 # TAB 3
 # =========================================================
-with tab3:
+elif menu == "Visualisasi":
 
     st.subheader("Heatmap Korelasi")
 
@@ -401,7 +379,7 @@ with tab3:
 # =========================================================
 # TAB 4
 # =========================================================
-with tab4:
+elif menu == "Profil Kelompok":
 
     st.subheader("Profil Kelompok")
 
