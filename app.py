@@ -140,10 +140,9 @@ if menu == "Dataset":
     # =====================================================
     st.subheader("Distribusi Umur Nasabah")
     fig, ax = plt.subplots(figsize=(10,4))
-    ax.hist(
-        df['Customer_Age'],
-        bins=20
-    )
+    ax.hist(df['Customer_Age'], bins=20, edgecolor='white')
+    ax.axvline(df['Customer_Age'].mean(), color='red', linestyle='--', linewidth=2, label=f"Rata-rata: {df['Customer_Age'].mean():.0f} tahun")
+    ax.legend(fontsize=11)
     ax.set_xlabel("Umur")
     ax.set_ylabel("Jumlah")
     st.pyplot(fig)
@@ -152,14 +151,27 @@ if menu == "Dataset":
     # GENDER
     # =====================================================
     st.subheader("Distribusi Gender")
-    fig, ax = plt.subplots()
-    gender = df['Gender'].value_counts()
-    ax.bar(
-        gender.index,
-        gender.values
-    )
-    ax.set_xlabel("Gender")
-    ax.set_ylabel("Jumlah")
+    distribusi_gender = df['Gender'].value_counts()
+    fig, ax = plt.subplots(figsize=(7, 7))
+    wedges, texts, autotexts = ax.pie(distribusi_gender, labels=distribusi_gender.index, autopct='%1.1f%%', wedgeprops=dict(width=0.5), textprops={'fontsize': 13})
+    ax.set_title('Distribusi Jenis Kelamin Nasabah\n(Gender)', fontsize=15, fontweight='bold')
+    plt.tight_layout()
+    st.pyplot(fig)
+    
+    # =====================================================
+    # EDUCATIONN LEVEL
+    # =====================================================
+    COLORS = ['#4C72B0', '#DD8452', '#55A868', '#C44E52', '#8172B3', '#937860']
+    distribusi_education = df['Education_Level'].value_counts()
+    st.subheader("Distribusi Tingkat Pendidikan")
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.barh(distribusi_education.index, distribusi_education.values, color=COLORS, edgecolor='white')
+    ax.set_title('Distribusi Tingkat Pendidikan Nasabah\n(Education Level)', fontsize=15, fontweight='bold')
+    ax.set_xlabel('Jumlah Nasabah', fontsize=12)
+    ax.set_ylabel('Tingkat Pendidikan', fontsize=12)
+    for i, v in enumerate(distribusi_education.values):
+        ax.text(v + 30, i, str(v), va='center', fontsize=10)
+
     st.pyplot(fig)
 
 # =========================================================
