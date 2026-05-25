@@ -431,12 +431,12 @@ elif menu == "Profil Kelompok":
             {
                 "Nama": "Vincentius Gavrila Subagyo",
                 "NIM": "123240146",
-                "Peran": "Setter"
+                "Peran": "Data Analyst / SPK Analyst"
             },
             {
                 "Nama": "Sebastian Alvaro Huller",
                 "NIM": "123240162",
-                "Peran": "Libero"
+                "Peran": "UI Designer / Frontend"
             }
         ]
 
