@@ -295,7 +295,7 @@ elif menu == "Perhitungan SAW":
         # =================================================
         # BAR CHART
         # =================================================
-        st.subheader("Visualisasi Skor SAW")
+        st.subheader(f"Visualisasi Top {top_n} Skor SAW dari {sample_n} sample")
 
         top_data = df_result.head(top_n)
 
@@ -359,17 +359,66 @@ elif menu == "Visualisasi":
 
         df_result = st.session_state['df_result']
 
-        st.subheader("Distribusi Skor SAW")
+        fig, axes = plt.subplots(1, 2, figsize=(14,5))
+        st.subheader("Distribusi Skor SAW Semua Nasabah")
 
-        fig, ax = plt.subplots(figsize=(10,4))
+        # =====================================================
+        # HISTOGRAM
+        # =====================================================
 
-        ax.hist(df_result['Skor_SAW'], bins=20, edgecolor='white')
-        ax.axvline(df_result['Skor_SAW'].mean(), color='red', linestyle='--', linewidth=2, label=f"Rata-rata: {df_result['Skor_SAW'].mean():.4f}")
-        ax.legend(fontsize=11)
-        ax.set_xlabel("Skor")
-        ax.set_ylabel("Frekuensi")
+        counts, bins, patches = axes[0].hist(
+            df_result['Skor_SAW'],
+            bins=40,
+            edgecolor='white'
+        )
+
+        # Warna gradasi biru
+        colors = plt.cm.Blues(
+            np.linspace(0.4, 0.9, len(patches))
+        )
+
+        for color, patch in zip(colors, patches):
+            patch.set_facecolor(color)
+
+        axes[0].set_title("Histogram Skor SAW")
+
+        axes[0].set_xlabel("Skor SAW")
+        axes[0].set_ylabel("Frekuensi")
+
+        axes[0].grid(axis='y', alpha=0.3)
+
+        # =====================================================
+        # SCATTER PLOT
+        # =====================================================
+
+        scatter_colors = plt.cm.tab20(
+            np.linspace(0, 1, len(df_result))
+        )
+
+        axes[1].scatter(
+            df_result['Peringkat'],
+            df_result['Skor_SAW'],
+            color='#2563eb'
+        )
+
+        axes[1].set_title("Skor SAW vs Peringkat")
+
+        axes[1].set_xlabel("Peringkat")
+        axes[1].set_ylabel("Skor SAW")
+
+        axes[1].grid(True, alpha=0.3)
+
+        axes[1].invert_xaxis()
+
+        # =====================================================
+        # SHOW
+        # =====================================================
+
+        plt.tight_layout()
 
         st.pyplot(fig)
+
+        plt.close()
 
 # =========================================================
 # TAB 4
