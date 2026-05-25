@@ -154,7 +154,6 @@ if menu == "Dataset":
     distribusi_gender = df['Gender'].value_counts()
     fig, ax = plt.subplots(figsize=(7, 7))
     wedges, texts, autotexts = ax.pie(distribusi_gender, labels=distribusi_gender.index, autopct='%1.1f%%', wedgeprops=dict(width=0.5), textprops={'fontsize': 13})
-    ax.set_title('Distribusi Jenis Kelamin Nasabah\n(Gender)', fontsize=15, fontweight='bold')
     plt.tight_layout()
     st.pyplot(fig)
     
@@ -166,7 +165,6 @@ if menu == "Dataset":
     st.subheader("Distribusi Tingkat Pendidikan")
     fig, ax = plt.subplots(figsize=(9, 5))
     ax.barh(distribusi_education.index, distribusi_education.values, color=COLORS, edgecolor='white')
-    ax.set_title('Distribusi Tingkat Pendidikan Nasabah\n(Education Level)', fontsize=15, fontweight='bold')
     ax.set_xlabel('Jumlah Nasabah', fontsize=12)
     ax.set_ylabel('Tingkat Pendidikan', fontsize=12)
     for i, v in enumerate(distribusi_education.values):
@@ -380,38 +378,13 @@ elif menu == "Profil Kelompok":
 
     st.subheader("Profil Kelompok")
 
-    anggota = pd.DataFrame({
-        "Nama": [
-            "Vincentius Gavrila Subagyo",
-            "Sebastian Alvaro Huller"
-        ],
-        "NIM": [
-            "123240146",
-            "123240162"
-        ],
-        "Peran": [
-            "Setter",
-            "Libero"
-        ]
-    })
-
-    st.table(anggota)
 
     st.subheader("Tentang Proyek")
-
     st.write("""
     Sistem Pendukung Keputusan (SPK) ini dibuat menggunakan metode
     Simple Additive Weighting (SAW) untuk menentukan nasabah prioritas
     kartu kredit berdasarkan beberapa kriteria.
     """)
-
-    st.subheader("Rumus SAW")
-
-    st.latex(r"r_{ij} = \frac{x_{ij}}{max(x_{ij})}")
-
-    st.latex(r"r_{ij} = \frac{min(x_{ij})}{x_{ij}}")
-
-    st.latex(r"V_i = \sum w_j r_{ij}")
 
 # =========================================================
 # FOOTER
