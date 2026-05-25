@@ -453,20 +453,17 @@ elif menu == "Profil Kelompok":
             }
         ]
 
-        # Membuat layout kolom untuk setiap anggota
         cols = st.columns(len(anggota_data))
         
         for i, anggota in enumerate(anggota_data):
             with cols[i]:
-                # Menggunakan container dengan border untuk efek kartu
+                # Kartu
                 with st.container(border=True):
                     st.markdown(f"### {anggota['Nama']}")
                     st.markdown(f"**NIM:** {anggota['NIM']}")
                     st.markdown(f"**Peran:** {anggota['Peran']}")
-                    # Opsional: Tambahkan ikon atau foto jika ada
-                    # st.image("path_to_image.jpg", use_column_width=True) 
 
-        st.divider() # Garis pemisah
+        st.divider()
 
         st.subheader("Tentang Proyek")
         st.write("""
