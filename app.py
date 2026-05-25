@@ -334,19 +334,6 @@ elif menu == "Visualisasi":
     st.pyplot(fig)
 
     # =====================================================
-    # BOXPLOT
-    # =====================================================
-    st.subheader("Boxplot Kriteria")
-
-    fig, ax = plt.subplots(figsize=(12,5))
-
-    df[CRITERIA_COLS].boxplot(ax=ax)
-
-    plt.xticks(rotation=20)
-
-    st.pyplot(fig)
-
-    # =====================================================
     # SCATTER
     # =====================================================
     st.subheader("Credit Limit vs Total Transaction")
@@ -378,11 +365,9 @@ elif menu == "Visualisasi":
 
         fig, ax = plt.subplots(figsize=(10,4))
 
-        ax.hist(
-            df_result['Skor_SAW'],
-            bins=20
-        )
-
+        ax.hist(df_result['Skor_SAW'], bins=20, edgecolor='white')
+        ax.axvline(df_result['Skor_SAW'].mean(), color='red', linestyle='--', linewidth=2, label=f"Rata-rata: {df_result['Skor_SAW'].mean():.4f}")
+        ax.legend(fontsize=11)
         ax.set_xlabel("Skor")
         ax.set_ylabel("Frekuensi")
 
