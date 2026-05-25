@@ -375,16 +375,43 @@ elif menu == "Visualisasi":
 # TAB 4
 # =========================================================
 elif menu == "Profil Kelompok":
+        st.subheader("Profil Kelompok")
+        
+        # Data Anggota
+        anggota_data = [
+            {
+                "Nama": "Vincentius Gavrila Subagyo",
+                "NIM": "123240146",
+                "Peran": "Setter"
+            },
+            {
+                "Nama": "Sebastian Alvaro Huller",
+                "NIM": "123240162",
+                "Peran": "Libero"
+            }
+        ]
 
-    st.subheader("Profil Kelompok")
+        # Membuat layout kolom untuk setiap anggota
+        cols = st.columns(len(anggota_data))
+        
+        for i, anggota in enumerate(anggota_data):
+            with cols[i]:
+                # Menggunakan container dengan border untuk efek kartu
+                with st.container(border=True):
+                    st.markdown(f"### {anggota['Nama']}")
+                    st.markdown(f"**NIM:** {anggota['NIM']}")
+                    st.markdown(f"**Peran:** {anggota['Peran']}")
+                    # Opsional: Tambahkan ikon atau foto jika ada
+                    # st.image("path_to_image.jpg", use_column_width=True) 
 
+        st.divider() # Garis pemisah
 
-    st.subheader("Tentang Proyek")
-    st.write("""
-    Sistem Pendukung Keputusan (SPK) ini dibuat menggunakan metode
-    Simple Additive Weighting (SAW) untuk menentukan nasabah prioritas
-    kartu kredit berdasarkan beberapa kriteria.
-    """)
+        st.subheader("Tentang Proyek")
+        st.write("""
+        Sistem Pendukung Keputusan (SPK) ini dibuat menggunakan metode
+        Simple Additive Weighting (SAW) untuk menentukan nasabah prioritas
+        kartu kredit berdasarkan beberapa kriteria.
+        """)
 
 # =========================================================
 # FOOTER
