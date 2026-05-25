@@ -7,18 +7,14 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-# =========================================================
 # CONFIG
-# =========================================================
 st.set_page_config(
     page_title="SPK Nasabah Kartu Kredit",
     page_icon="💳",
     layout="wide"
 )
 
-# =========================================================
 # SIMPLE CSS
-# =========================================================
 st.markdown("""
 <style>
 .main {
@@ -47,14 +43,10 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-# =========================================================
 # LOAD DATA
-# =========================================================
 df = pd.read_csv("BankChurners.csv")
 
-# =========================================================
 # KRITERIA SAW
-# =========================================================
 CRITERIA_COLS = [
     'Credit_Limit',
     'Total_Trans_Amt',
@@ -83,15 +75,10 @@ CRITERIA_TYPE = [1,1,1,1,0,1,0,0]
 
 DEFAULT_WEIGHTS = [0.20,0.25,0.15,0.10,0.10,0.10,0.05,0.05]
 
-# =========================================================
-# HEADER
-# =========================================================
 st.title("Sistem Pendukung Keputusan Nasabah Kartu Kredit")
 st.write("Metode Simple Additive Weighting (SAW)")
 
-# =========================================================
-# SIDEBAR
-# =========================================================
+
 st.sidebar.title("Menu Navigasi")
 
 menu = st.sidebar.radio(
@@ -99,9 +86,7 @@ menu = st.sidebar.radio(
     ["Dataset", "Perhitungan SAW", "Visualisasi", "Profil Kelompok"]
 )
 
-# =========================================================
 # TAB 1
-# =========================================================
 if menu == "Dataset":
     st.subheader("Informasi Dataset")
 
@@ -122,59 +107,123 @@ if menu == "Dataset":
         use_container_width=True
     )
 
-    # =====================================================
-    # PIE CHART
-    # =====================================================
-    st.subheader("Distribusi Status Nasabah")
-    fig, ax = plt.subplots()
+    st.subheader("Dashboard Visualisasi Dataset")
+
+    fig, axes = plt.subplots(2, 2, figsize=(16, 10))
+
     vals = df['Attrition_Flag'].value_counts()
-    ax.pie(
+
+    colors1 = ['#2563eb', '#f59e0b']
+
+    axes[0,0].pie(
         vals,
         labels=vals.index,
-        autopct='%1.1f%%'
+        autopct='%1.1f%%',
+        colors=colors1,
+        startangle=90,
+        textprops={'fontsize': 10}
     )
-    st.pyplot(fig)
 
-    # =====================================================
-    # HISTOGRAM
-    # =====================================================
-    st.subheader("Distribusi Umur Nasabah")
-    fig, ax = plt.subplots(figsize=(10,4))
-    ax.hist(df['Customer_Age'], bins=20, edgecolor='white')
-    ax.axvline(df['Customer_Age'].mean(), color='red', linestyle='--', linewidth=2, label=f"Rata-rata: {df['Customer_Age'].mean():.0f} tahun")
-    ax.legend(fontsize=11)
-    ax.set_xlabel("Umur")
-    ax.set_ylabel("Jumlah")
-    st.pyplot(fig)
+    axes[0,0].set_title(
+        "Distribusi Status Nasabah",
+        fontsize=13,
+        fontweight='bold'
+    )
 
-    # =====================================================
-    # GENDER
-    # =====================================================
-    st.subheader("Distribusi Gender")
+
+    counts, bins, patches = axes[0,1].hist(
+        df['Customer_Age'],
+        bins=20,
+        edgecolor='white'
+    )
+
+    colors2 = plt.cm.Blues(
+        np.linspace(0.4, 0.9, len(patches))
+    )
+
+    for color, patch in zip(colors2, patches):
+        patch.set_facecolor(color)
+
+    mean_age = df['Customer_Age'].mean()
+
+    axes[0,1].axvline(
+        mean_age,
+        color='#dc2626',
+        linestyle='--',
+        linewidth=2,
+        label=f"Rata-rata: {mean_age:.0f}"
+    )
+
+    axes[0,1].set_title(
+        "Distribusi Umur Nasabah",
+        fontsize=13,
+        fontweight='bold'
+    )
+
+    axes[0,1].set_xlabel("Umur")
+    axes[0,1].set_ylabel("Jumlah")
+    axes[0,1].legend()
+    axes[0,1].grid(axis='y', alpha=0.3)
+
     distribusi_gender = df['Gender'].value_counts()
-    fig, ax = plt.subplots(figsize=(7, 7))
-    wedges, texts, autotexts = ax.pie(distribusi_gender, labels=distribusi_gender.index, autopct='%1.1f%%', wedgeprops=dict(width=0.5), textprops={'fontsize': 13})
-    plt.tight_layout()
-    st.pyplot(fig)
-    
-    # =====================================================
-    # EDUCATIONN LEVEL
-    # =====================================================
-    COLORS = ['#4C72B0', '#DD8452', '#55A868', '#C44E52', '#8172B3', '#937860']
+
+    colors3 = ['#3b82f6', '#ec4899']
+
+    axes[1,0].pie(
+        distribusi_gender,
+        labels=distribusi_gender.index,
+        autopct='%1.1f%%',
+        colors=colors3,
+        wedgeprops=dict(width=0.45),
+        startangle=90,
+        textprops={'fontsize': 10}
+    )
+
+    axes[1,0].set_title(
+        "Distribusi Gender",
+        fontsize=13,
+        fontweight='bold'
+    )
+
+
     distribusi_education = df['Education_Level'].value_counts()
-    st.subheader("Distribusi Tingkat Pendidikan")
-    fig, ax = plt.subplots(figsize=(9, 5))
-    ax.barh(distribusi_education.index, distribusi_education.values, color=COLORS, edgecolor='white')
-    ax.set_xlabel('Jumlah Nasabah', fontsize=12)
-    ax.set_ylabel('Tingkat Pendidikan', fontsize=12)
+
+    colors4 = plt.cm.viridis(
+        np.linspace(0.2, 0.9, len(distribusi_education))
+    )
+
+    bars = axes[1,1].barh(
+        distribusi_education.index,
+        distribusi_education.values,
+        color=colors4,
+        edgecolor='white'
+    )
+
+    axes[1,1].set_title(
+        "Distribusi Tingkat Pendidikan",
+        fontsize=13,
+        fontweight='bold'
+    )
+
+    axes[1,1].set_xlabel("Jumlah Nasabah")
+    axes[1,1].set_ylabel("Pendidikan")
+
     for i, v in enumerate(distribusi_education.values):
-        ax.text(v + 30, i, str(v), va='center', fontsize=10)
+        axes[1,1].text(
+            v + 20,
+            i,
+            str(v),
+            va='center',
+            fontsize=9
+        )
+
+    axes[1,1].grid(axis='x', alpha=0.3)
+
+    plt.tight_layout()
 
     st.pyplot(fig)
 
-# =========================================================
 # TAB 2
-# =========================================================
 elif menu == "Perhitungan SAW":
     st.subheader("Bobot Kriteria")
 
@@ -240,9 +289,6 @@ elif menu == "Perhitungan SAW":
         m, n = x.shape
         r = np.zeros((m, n))
 
-        # =================================================
-        # NORMALISASI
-        # =================================================
         for i in range(n):
 
             if CRITERIA_TYPE[i] == 1:
@@ -251,9 +297,6 @@ elif menu == "Perhitungan SAW":
             else:
                 r[:, i] = np.min(x[:, i]) / x[:, i]
 
-        # =================================================
-        # HITUNG NILAI PREFERENSI
-        # =================================================
         w = np.array(weights)
         w = w / np.sum(w)
 
@@ -278,9 +321,6 @@ elif menu == "Perhitungan SAW":
 
         st.success("Perhitungan SAW berhasil dilakukan")
 
-    # =====================================================
-    # HASIL
-    # =====================================================
     if 'df_result' in st.session_state:
 
         df_result = st.session_state['df_result']
@@ -292,9 +332,6 @@ elif menu == "Perhitungan SAW":
             use_container_width=True
         )
 
-        # =================================================
-        # BAR CHART
-        # =================================================
         st.subheader(f"Visualisasi Top {top_n} Skor SAW dari {sample_n} sample")
 
         top_data = df_result.head(top_n)
@@ -311,9 +348,7 @@ elif menu == "Perhitungan SAW":
 
         st.pyplot(fig)
 
-# =========================================================
 # TAB 3
-# =========================================================
 elif menu == "Visualisasi":
 
     st.subheader("Heatmap Korelasi")
@@ -331,9 +366,6 @@ elif menu == "Visualisasi":
 
     st.pyplot(fig)
 
-    # =====================================================
-    # SCATTER
-    # =====================================================
     st.subheader("Credit Limit vs Total Transaction")
 
     fig, ax = plt.subplots(figsize=(10,5))
@@ -352,19 +384,12 @@ elif menu == "Visualisasi":
 
     st.pyplot(fig)
 
-    # =====================================================
-    # DISTRIBUSI SKOR SAW
-    # =====================================================
     if 'df_result' in st.session_state:
 
         df_result = st.session_state['df_result']
 
         fig, axes = plt.subplots(1, 2, figsize=(14,5))
         st.subheader("Distribusi Skor SAW Semua Nasabah")
-
-        # =====================================================
-        # HISTOGRAM
-        # =====================================================
 
         counts, bins, patches = axes[0].hist(
             df_result['Skor_SAW'],
@@ -387,10 +412,6 @@ elif menu == "Visualisasi":
 
         axes[0].grid(axis='y', alpha=0.3)
 
-        # =====================================================
-        # SCATTER PLOT
-        # =====================================================
-
         scatter_colors = plt.cm.tab20(
             np.linspace(0, 1, len(df_result))
         )
@@ -410,19 +431,11 @@ elif menu == "Visualisasi":
 
         axes[1].invert_xaxis()
 
-        # =====================================================
-        # SHOW
-        # =====================================================
-
         plt.tight_layout()
 
         st.pyplot(fig)
 
-        plt.close()
-
-# =========================================================
 # TAB 4
-# =========================================================
 elif menu == "Profil Kelompok":
         st.subheader("Profil Kelompok")
         
@@ -462,9 +475,7 @@ elif menu == "Profil Kelompok":
         kartu kredit berdasarkan beberapa kriteria.
         """)
 
-# =========================================================
 # FOOTER
-# =========================================================
 st.markdown("---")
 
 st.caption(
