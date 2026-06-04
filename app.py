@@ -279,12 +279,58 @@ elif menu == "Perhitungan SAW":
     if abs(total_weight - 1.0) > 0.01:
         st.warning("Total bobot sebaiknya = 1")
 
+    st.subheader("Input Alternatif Baru")
+
+    with st.form("form_alternatif"):
+        nama_alternatif = st.text_input(
+            "Nama Alternatif/Nasabah",
+            max_chars=50,
+            help="Masukkan nama alternatif yang akan dinilai"
+        )
+
+        input_data = {}
+        st.info("Nilai hanya dapat diisi untuk kriteria yang sudah ditentukan sistem. Rentang nilai mengikuti data dataset agar tidak out of topic.")
+
+        for col, label in zip(CRITERIA_COLS, CRITERIA_LABELS):
+            min_val = float(df[col].min())
+            max_val = float(df[col].max())
+
+            input_data[col] = st.number_input(
+                label,
+                min_value=min_val,
+                max_value=max_val,
+                value=min_val,
+                step=(max_val-min_val)/100 if max_val > min_val else 1.0
+            )
+
+        submit_alternatif = st.form_submit_button("Tambah Alternatif")
+
+    if submit_alternatif:
+        if nama_alternatif.strip() == "":
+            st.error("Nama alternatif wajib diisi.")
+        else:
+            alternatif_baru = {"CLIENTNUM": nama_alternatif}
+
+            for k, v in input_data.items():
+                alternatif_baru[k] = v
+
+            st.session_state["alternatif_baru"] = alternatif_baru
+            st.success("Alternatif berhasil ditambahkan.")
+
     run_saw = st.button("Hitung SAW")
+
     if run_saw:
         df_sample = df.sample(
             n=int(sample_n),
             random_state=42
         ).copy()
+
+        if "alternatif_baru" in st.session_state:
+            df_sample = pd.concat(
+                [df_sample, pd.DataFrame([st.session_state["alternatif_baru"]])],
+                ignore_index=True
+            )
+
         x = df_sample[CRITERIA_COLS].values.astype(float)
         m, n = x.shape
         r = np.zeros((m, n))
