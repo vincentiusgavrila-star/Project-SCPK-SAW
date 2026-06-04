@@ -80,7 +80,6 @@ st.write("Metode Simple Additive Weighting (SAW)")
 
 
 st.sidebar.title("Menu Navigasi")
-
 menu = st.sidebar.radio(
     "",
     ["Dataset", "Perhitungan SAW", "Visualisasi", "Profil Kelompok"]
@@ -108,13 +107,10 @@ if menu == "Dataset":
     )
 
     st.subheader("Dashboard Visualisasi Dataset")
-
     fig, axes = plt.subplots(2, 2, figsize=(16, 10))
 
     vals = df['Attrition_Flag'].value_counts()
-
     colors1 = ['#2563eb', '#f59e0b']
-
     axes[0,0].pie(
         vals,
         labels=vals.index,
@@ -123,29 +119,24 @@ if menu == "Dataset":
         startangle=90,
         textprops={'fontsize': 10}
     )
-
     axes[0,0].set_title(
         "Distribusi Status Nasabah",
         fontsize=13,
         fontweight='bold'
     )
 
-
     counts, bins, patches = axes[0,1].hist(
         df['Customer_Age'],
         bins=20,
         edgecolor='white'
     )
-
     colors2 = plt.cm.Blues(
         np.linspace(0.4, 0.9, len(patches))
     )
-
     for color, patch in zip(colors2, patches):
         patch.set_facecolor(color)
 
     mean_age = df['Customer_Age'].mean()
-
     axes[0,1].axvline(
         mean_age,
         color='#dc2626',
@@ -153,22 +144,18 @@ if menu == "Dataset":
         linewidth=2,
         label=f"Rata-rata: {mean_age:.0f}"
     )
-
     axes[0,1].set_title(
         "Distribusi Umur Nasabah",
         fontsize=13,
         fontweight='bold'
     )
-
     axes[0,1].set_xlabel("Umur")
     axes[0,1].set_ylabel("Jumlah")
     axes[0,1].legend()
     axes[0,1].grid(axis='y', alpha=0.3)
 
     distribusi_gender = df['Gender'].value_counts()
-
     colors3 = ['#3b82f6', '#ec4899']
-
     axes[1,0].pie(
         distribusi_gender,
         labels=distribusi_gender.index,
@@ -178,36 +165,29 @@ if menu == "Dataset":
         startangle=90,
         textprops={'fontsize': 10}
     )
-
     axes[1,0].set_title(
         "Distribusi Gender",
         fontsize=13,
         fontweight='bold'
     )
 
-
     distribusi_education = df['Education_Level'].value_counts()
-
     colors4 = plt.cm.viridis(
         np.linspace(0.2, 0.9, len(distribusi_education))
     )
-
     bars = axes[1,1].barh(
         distribusi_education.index,
         distribusi_education.values,
         color=colors4,
         edgecolor='white'
     )
-
     axes[1,1].set_title(
         "Distribusi Tingkat Pendidikan",
         fontsize=13,
         fontweight='bold'
     )
-
     axes[1,1].set_xlabel("Jumlah Nasabah")
     axes[1,1].set_ylabel("Pendidikan")
-
     for i, v in enumerate(distribusi_education.values):
         axes[1,1].text(
             v + 20,
@@ -216,11 +196,9 @@ if menu == "Dataset":
             va='center',
             fontsize=9
         )
-
     axes[1,1].grid(axis='x', alpha=0.3)
 
     plt.tight_layout()
-
     st.pyplot(fig)
 
 # TAB 2
@@ -231,7 +209,6 @@ elif menu == "Perhitungan SAW":
     # INPUT BOBOT
     weights = []
     cols = st.columns(len(CRITERIA_LABELS))
-
     for i, label in enumerate(CRITERIA_LABELS):
         with cols[i]:
             w = st.slider(
@@ -243,17 +220,13 @@ elif menu == "Perhitungan SAW":
                 key=f"weight_{i}"
             )
             weights.append(w)
-
     total_weight = sum(weights)
-
     st.write(f"Total Bobot = {total_weight:.2f}")
-
     if abs(total_weight - 1.0) > 0.01:
         st.warning("Total bobot sebaiknya = 1.0")
 
     # PARAMETER
     col1, col2 = st.columns(2)
-
     with col1:
         sample_n = st.number_input(
             "Jumlah Data Sampel",
@@ -261,7 +234,6 @@ elif menu == "Perhitungan SAW":
             max_value=len(df),
             value=min(500, len(df))
         )
-
     with col2:
         top_n = st.number_input(
             "Jumlah Top Ranking",
@@ -279,7 +251,6 @@ elif menu == "Perhitungan SAW":
             for x in CRITERIA_TYPE
         ]
     })
-
     st.dataframe(
         weight_df,
         use_container_width=True
@@ -287,33 +258,20 @@ elif menu == "Perhitungan SAW":
 
     st.divider()
 
-    # =====================================================
     # INPUT ALTERNATIF BARU
-    # =====================================================
-
     st.subheader("Input Alternatif Baru")
-
     with st.form("form_alternatif"):
-
         nama_alternatif = st.text_input(
             "Nama Nasabah",
             key="nama_nasabah"
         )
-
         input_data = {}
-
         st.info(
             "Masukkan nilai sesuai rentang data yang tersedia."
         )
-
-        for col, label in zip(
-            CRITERIA_COLS,
-            CRITERIA_LABELS
-        ):
-
+        for col, label in zip(CRITERIA_COLS,CRITERIA_LABELS):
             min_val = float(df[col].min())
             max_val = float(df[col].max())
-
             input_data[col] = st.number_input(
                 label,
                 min_value=min_val,
@@ -321,67 +279,43 @@ elif menu == "Perhitungan SAW":
                 value=min_val,
                 key=f"input_{col}"
             )
-
         submit_alternatif = st.form_submit_button(
             "Tambah Alternatif"
         )
 
     if submit_alternatif:
-
         if nama_alternatif.strip() == "":
             st.error("Nama nasabah wajib diisi.")
-
         else:
-
-            alternatif_baru = {
-                "CLIENTNUM": nama_alternatif
-            }
-
+            alternatif_baru = {"CLIENTNUM": nama_alternatif}
             for k, v in input_data.items():
                 alternatif_baru[k] = v
-
-            st.session_state[
-                "alternatif_baru"
-            ] = alternatif_baru
-
-            st.success(
-                "Alternatif berhasil ditambahkan."
-            )
+            st.session_state["alternatif_baru"] = alternatif_baru
+            st.success("Alternatif berhasil ditambahkan.")
 
     # TAMPILKAN DATA YANG SUDAH DITAMBAHKAN
-
     if "alternatif_baru" in st.session_state:
-
         st.subheader("Alternatif Saat Ini")
-
         st.dataframe(
             pd.DataFrame(
                 [st.session_state["alternatif_baru"]]
             ),
             use_container_width=True
         )
-
         if st.button("Hapus Alternatif"):
-
             del st.session_state[
                 "alternatif_baru"
             ]
-
             st.rerun()
 
     st.divider()
 
-    # =====================================================
     # HITUNG SAW
-    # =====================================================
-
     run_saw = st.button(
         "Hitung SAW",
         use_container_width=True
     )
-
     if run_saw:
-
         df_sample = df.sample(
             n=int(sample_n),
             random_state=42
@@ -389,11 +323,9 @@ elif menu == "Perhitungan SAW":
 
         # TAMBAHKAN ALTERNATIF USER
         if "alternatif_baru" in st.session_state:
-
             alternatif_df = pd.DataFrame(
                 [st.session_state["alternatif_baru"]]
             )
-
             df_sample = pd.concat(
                 [df_sample, alternatif_df],
                 ignore_index=True
@@ -403,30 +335,17 @@ elif menu == "Perhitungan SAW":
         x = df_sample[
             CRITERIA_COLS
         ].values.astype(float)
-
         m, n = x.shape
-
         r = np.zeros((m, n))
-
         for i in range(n):
-
             if CRITERIA_TYPE[i] == 1:
-
-                r[:, i] = (
-                    x[:, i] /
-                    np.max(x[:, i])
-                )
+                r[:, i] = (x[:, i] / np.max(x[:, i]))
 
             else:
-
-                r[:, i] = (
-                    np.min(x[:, i]) /
-                    x[:, i]
-                )
+                r[:, i] = (np.min(x[:, i]) / x[:, i])
 
         # BOBOT
         w = np.array(weights)
-
         w = w / np.sum(w)
 
         # PREFERENSI
@@ -434,7 +353,6 @@ elif menu == "Perhitungan SAW":
             w * r,
             axis=1
         )
-
         df_sample["Skor_SAW"] = v
 
         df_result = df_sample[
@@ -444,7 +362,6 @@ elif menu == "Perhitungan SAW":
             "Skor_SAW",
             ascending=False
         ).reset_index(drop=True)
-
         df_result.insert(
             0,
             "Peringkat",
@@ -453,141 +370,94 @@ elif menu == "Perhitungan SAW":
                 len(df_result) + 1
             )
         )
+        st.session_state["df_result"] = df_result
+        st.success("Perhitungan SAW berhasil dilakukan")
 
-        st.session_state[
-            "df_result"
-        ] = df_result
-
-        st.success(
-            "Perhitungan SAW berhasil dilakukan"
-        )
-
-    # =====================================================
     # HASIL
-    # =====================================================
-
     if "df_result" in st.session_state:
-
-        df_result = st.session_state[
-            "df_result"
-        ]
-
-        st.subheader(
-            f"Top {top_n} Ranking Nasabah"
-        )
-
+        df_result = st.session_state["df_result"]
+        st.subheader(f"Top {top_n} Ranking Nasabah")
         st.dataframe(
             df_result.head(top_n),
             use_container_width=True
         )
 
         # TAMPILKAN POSISI ALTERNATIF USER
-
         if "alternatif_baru" in st.session_state:
-
             nama = st.session_state[
                 "alternatif_baru"
             ]["CLIENTNUM"]
-
             hasil_user = df_result[
                 df_result["CLIENTNUM"] == nama
             ]
-
             if len(hasil_user) > 0:
-
-                st.subheader(
-                    "Peringkat Alternatif yang Ditambahkan"
-                )
-
+                st.subheader("Peringkat Alternatif yang Ditambahkan")
                 st.dataframe(
                     hasil_user,
                     use_container_width=True
                 )
 
         # GRAFIK
-        st.subheader(
-            f"Visualisasi Top {top_n}"
-        )
-
+        st.subheader(f"Visualisasi Top {top_n}")
         top_data = df_result.head(top_n)
-
         fig, ax = plt.subplots(
             figsize=(10, 4)
         )
-
         ax.bar(
             top_data["Peringkat"].astype(str),
             top_data["Skor_SAW"]
         )
-
         ax.set_xlabel("Peringkat")
         ax.set_ylabel("Skor SAW")
-
         st.pyplot(fig)
+
 # TAB 3
 elif menu == "Visualisasi":
 
     st.subheader("Heatmap Korelasi")
-
     fig, ax = plt.subplots(figsize=(10,6))
-
     corr = df[CRITERIA_COLS].corr()
-
     sns.heatmap(
         corr,
         annot=True,
         cmap='Blues',
         ax=ax
     )
-
     st.pyplot(fig)
 
     st.subheader("Credit Limit vs Total Transaction")
-
     fig, ax = plt.subplots(figsize=(10,5))
-
     scatter = ax.scatter(
         df['Credit_Limit'],
         df['Total_Trans_Amt'],
         c=df['Avg_Utilization_Ratio'],
         cmap='viridis'
     )
-
     plt.colorbar(scatter)
-
     ax.set_xlabel("Credit Limit")
     ax.set_ylabel("Total Transaction Amount")
-
     st.pyplot(fig)
 
     if 'df_result' in st.session_state:
-
         df_result = st.session_state['df_result']
-
         fig, axes = plt.subplots(1, 2, figsize=(14,5))
-        st.subheader("Distribusi Skor SAW Semua Nasabah")
 
+        st.subheader("Distribusi Skor SAW Semua Nasabah")
         counts, bins, patches = axes[0].hist(
             df_result['Skor_SAW'],
             bins=40,
             edgecolor='white'
         )
-
         # Warna gradasi biru
         colors = plt.cm.Blues(
             np.linspace(0.4, 0.9, len(patches))
         )
-
         for color, patch in zip(colors, patches):
             patch.set_facecolor(color)
-
         axes[0].set_title("Histogram Skor SAW")
-
         axes[0].set_xlabel("Skor SAW")
         axes[0].set_ylabel("Frekuensi")
-
         axes[0].grid(axis='y', alpha=0.3)
-
         scatter_colors = plt.cm.tab20(
             np.linspace(0, 1, len(df_result))
         )
@@ -597,18 +467,13 @@ elif menu == "Visualisasi":
             df_result['Skor_SAW'],
             color='#2563eb'
         )
-
         axes[1].set_title("Skor SAW vs Peringkat")
-
         axes[1].set_xlabel("Peringkat")
         axes[1].set_ylabel("Skor SAW")
-
         axes[1].grid(True, alpha=0.3)
-
         axes[1].invert_xaxis()
 
         plt.tight_layout()
-
         st.pyplot(fig)
 
 # TAB 4
@@ -628,9 +493,7 @@ elif menu == "Profil Kelompok":
                 "Peran": "UI Designer / Frontend"
             }
         ]
-
         cols = st.columns(len(anggota_data))
-        
         for i, anggota in enumerate(anggota_data):
             with cols[i]:
                 # Kartu
@@ -650,7 +513,6 @@ elif menu == "Profil Kelompok":
 
 # FOOTER
 st.markdown("---")
-
 st.caption(
     "SPK Nasabah Kartu Kredit • Metode SAW • Praktikum SCPK 2025/2026"
 )
