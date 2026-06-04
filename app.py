@@ -225,39 +225,44 @@ if menu == "Dataset":
 
 # TAB 2
 elif menu == "Perhitungan SAW":
+
     st.subheader("Bobot Kriteria")
 
-    # Input Bobot
+    # INPUT BOBOT
     weights = []
     cols = st.columns(len(CRITERIA_LABELS))
-    
+
     for i, label in enumerate(CRITERIA_LABELS):
         with cols[i]:
             w = st.slider(
                 label,
-                0.0,
-                1.0,
-                float(DEFAULT_WEIGHTS[i]),
-                0.01
+                min_value=0.0,
+                max_value=1.0,
+                value=float(DEFAULT_WEIGHTS[i]),
+                step=0.01,
+                key=f"weight_{i}"
             )
             weights.append(w)
 
     total_weight = sum(weights)
-    st.write(f"Total Bobot = {total_weight:.2f}")
-    
-    if abs(total_weight - 1.0) > 0.01:
-        st.warning("Total bobot sebaiknya = 1.0 untuk hasil yang akurat.")
 
-    # Input Parameter Sampling & Ranking
-    col_param1, col_param2 = st.columns(2)
-    with col_param1:
+    st.write(f"Total Bobot = {total_weight:.2f}")
+
+    if abs(total_weight - 1.0) > 0.01:
+        st.warning("Total bobot sebaiknya = 1.0")
+
+    # PARAMETER
+    col1, col2 = st.columns(2)
+
+    with col1:
         sample_n = st.number_input(
             "Jumlah Data Sampel",
             min_value=50,
             max_value=len(df),
             value=min(500, len(df))
         )
-    with col_param2:
+
+    with col2:
         top_n = st.number_input(
             "Jumlah Top Ranking",
             min_value=5,
@@ -265,6 +270,7 @@ elif menu == "Perhitungan SAW":
             value=10
         )
 
+    # TABEL BOBOT
     weight_df = pd.DataFrame({
         "Kriteria": CRITERIA_LABELS,
         "Bobot": weights,
@@ -274,24 +280,37 @@ elif menu == "Perhitungan SAW":
         ]
     })
 
-    st.dataframe(weight_df, use_container_width=True)
+    st.dataframe(
+        weight_df,
+        use_container_width=True
+    )
 
-    if abs(total_weight - 1.0) > 0.01:
-        st.warning("Total bobot sebaiknya = 1")
+    st.divider()
+
+    # =====================================================
+    # INPUT ALTERNATIF BARU
+    # =====================================================
 
     st.subheader("Input Alternatif Baru")
 
     with st.form("form_alternatif"):
+
         nama_alternatif = st.text_input(
-            "Nama Alternatif/Nasabah",
-            max_chars=50,
-            help="Masukkan nama alternatif yang akan dinilai"
+            "Nama Nasabah",
+            key="nama_nasabah"
         )
 
         input_data = {}
-        st.info("Nilai hanya dapat diisi untuk kriteria yang sudah ditentukan sistem. Rentang nilai mengikuti data dataset agar tidak out of topic.")
 
-        for col, label in zip(CRITERIA_COLS, CRITERIA_LABELS):
+        st.info(
+            "Masukkan nilai sesuai rentang data yang tersedia."
+        )
+
+        for col, label in zip(
+            CRITERIA_COLS,
+            CRITERIA_LABELS
+        ):
+
             min_val = float(df[col].min())
             max_val = float(df[col].max())
 
@@ -300,100 +319,211 @@ elif menu == "Perhitungan SAW":
                 min_value=min_val,
                 max_value=max_val,
                 value=min_val,
-                step=(max_val-min_val)/100 if max_val > min_val else 1.0
+                key=f"input_{col}"
             )
 
-        submit_alternatif = st.form_submit_button("Tambah Alternatif")
+        submit_alternatif = st.form_submit_button(
+            "Tambah Alternatif"
+        )
 
     if submit_alternatif:
+
         if nama_alternatif.strip() == "":
-            st.error("Nama alternatif wajib diisi.")
+            st.error("Nama nasabah wajib diisi.")
+
         else:
-            alternatif_baru = {"CLIENTNUM": nama_alternatif}
+
+            alternatif_baru = {
+                "CLIENTNUM": nama_alternatif
+            }
 
             for k, v in input_data.items():
                 alternatif_baru[k] = v
 
-            st.session_state["alternatif_baru"] = alternatif_baru
-            st.success("Alternatif berhasil ditambahkan.")
+            st.session_state[
+                "alternatif_baru"
+            ] = alternatif_baru
 
-    run_saw = st.button("Hitung SAW")
+            st.success(
+                "Alternatif berhasil ditambahkan."
+            )
+
+    # TAMPILKAN DATA YANG SUDAH DITAMBAHKAN
+
+    if "alternatif_baru" in st.session_state:
+
+        st.subheader("Alternatif Saat Ini")
+
+        st.dataframe(
+            pd.DataFrame(
+                [st.session_state["alternatif_baru"]]
+            ),
+            use_container_width=True
+        )
+
+        if st.button("Hapus Alternatif"):
+
+            del st.session_state[
+                "alternatif_baru"
+            ]
+
+            st.rerun()
+
+    st.divider()
+
+    # =====================================================
+    # HITUNG SAW
+    # =====================================================
+
+    run_saw = st.button(
+        "Hitung SAW",
+        use_container_width=True
+    )
 
     if run_saw:
+
         df_sample = df.sample(
             n=int(sample_n),
             random_state=42
         ).copy()
 
+        # TAMBAHKAN ALTERNATIF USER
         if "alternatif_baru" in st.session_state:
+
+            alternatif_df = pd.DataFrame(
+                [st.session_state["alternatif_baru"]]
+            )
+
             df_sample = pd.concat(
-                [df_sample, pd.DataFrame([st.session_state["alternatif_baru"]])],
+                [df_sample, alternatif_df],
                 ignore_index=True
             )
 
-        x = df_sample[CRITERIA_COLS].values.astype(float)
+        # NORMALISASI
+        x = df_sample[
+            CRITERIA_COLS
+        ].values.astype(float)
+
         m, n = x.shape
+
         r = np.zeros((m, n))
 
         for i in range(n):
 
             if CRITERIA_TYPE[i] == 1:
-                r[:, i] = x[:, i] / np.max(x[:, i])
+
+                r[:, i] = (
+                    x[:, i] /
+                    np.max(x[:, i])
+                )
 
             else:
-                r[:, i] = np.min(x[:, i]) / x[:, i]
 
+                r[:, i] = (
+                    np.min(x[:, i]) /
+                    x[:, i]
+                )
+
+        # BOBOT
         w = np.array(weights)
+
         w = w / np.sum(w)
 
-        v = np.sum(w * r, axis=1)
+        # PREFERENSI
+        v = np.sum(
+            w * r,
+            axis=1
+        )
 
-        df_sample['Skor_SAW'] = v
+        df_sample["Skor_SAW"] = v
 
         df_result = df_sample[
-            ['CLIENTNUM', 'Skor_SAW'] + CRITERIA_COLS
+            ["CLIENTNUM", "Skor_SAW"]
+            + CRITERIA_COLS
         ].sort_values(
-            'Skor_SAW',
+            "Skor_SAW",
             ascending=False
         ).reset_index(drop=True)
 
         df_result.insert(
             0,
-            'Peringkat',
-            range(1, len(df_result)+1)
+            "Peringkat",
+            range(
+                1,
+                len(df_result) + 1
+            )
         )
 
-        st.session_state['df_result'] = df_result
+        st.session_state[
+            "df_result"
+        ] = df_result
 
-        st.success("Perhitungan SAW berhasil dilakukan")
+        st.success(
+            "Perhitungan SAW berhasil dilakukan"
+        )
 
-    if 'df_result' in st.session_state:
+    # =====================================================
+    # HASIL
+    # =====================================================
 
-        df_result = st.session_state['df_result']
+    if "df_result" in st.session_state:
 
-        st.subheader(f"Top {top_n} Ranking Nasabah")
+        df_result = st.session_state[
+            "df_result"
+        ]
+
+        st.subheader(
+            f"Top {top_n} Ranking Nasabah"
+        )
 
         st.dataframe(
             df_result.head(top_n),
             use_container_width=True
         )
 
-        st.subheader(f"Visualisasi Top {top_n} Skor SAW dari {sample_n} sample")
+        # TAMPILKAN POSISI ALTERNATIF USER
+
+        if "alternatif_baru" in st.session_state:
+
+            nama = st.session_state[
+                "alternatif_baru"
+            ]["CLIENTNUM"]
+
+            hasil_user = df_result[
+                df_result["CLIENTNUM"] == nama
+            ]
+
+            if len(hasil_user) > 0:
+
+                st.subheader(
+                    "Peringkat Alternatif yang Ditambahkan"
+                )
+
+                st.dataframe(
+                    hasil_user,
+                    use_container_width=True
+                )
+
+        # GRAFIK
+        st.subheader(
+            f"Visualisasi Top {top_n}"
+        )
 
         top_data = df_result.head(top_n)
 
-        fig, ax = plt.subplots(figsize=(10,4))
+        fig, ax = plt.subplots(
+            figsize=(10, 4)
+        )
 
         ax.bar(
-            top_data['Peringkat'].astype(str),
-            top_data['Skor_SAW']
+            top_data["Peringkat"].astype(str),
+            top_data["Skor_SAW"]
         )
 
         ax.set_xlabel("Peringkat")
         ax.set_ylabel("Skor SAW")
 
         st.pyplot(fig)
-
 # TAB 3
 elif menu == "Visualisasi":
 
