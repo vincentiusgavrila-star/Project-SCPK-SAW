@@ -261,9 +261,16 @@ elif menu == "Perhitungan SAW":
     # INPUT ALTERNATIF BARU
     st.subheader("Input Alternatif Baru")
     with st.form("form_alternatif"):
-        nama_alternatif = st.text_input(
-            "Nama Nasabah",
-            key="nama_nasabah"
+        # Generate CLIENTNUM random
+        existing_ids = set(df["CLIENTNUM"])
+        while True:
+            clientnum_random = np.random.randint(700000000,900000001)
+            if clientnum_random not in existing_ids:
+                break
+        st.text_input(
+            "CLIENTNUM",
+            value=str(clientnum_random),
+            disabled=True
         )
         input_data = {}
         st.info(
@@ -284,14 +291,11 @@ elif menu == "Perhitungan SAW":
         )
 
     if submit_alternatif:
-        if nama_alternatif.strip() == "":
-            st.error("Nama nasabah wajib diisi.")
-        else:
-            alternatif_baru = {"CLIENTNUM": nama_alternatif}
-            for k, v in input_data.items():
-                alternatif_baru[k] = v
-            st.session_state["alternatif_baru"] = alternatif_baru
-            st.success("Alternatif berhasil ditambahkan.")
+        alternatif_baru = {"CLIENTNUM": clientnum_random}
+        for k, v in input_data.items():
+            alternatif_baru[k] = v
+        st.session_state["alternatif_baru"] = alternatif_baru
+        st.success(f"Alternatif berhasil ditambahkan dengan CLIENTNUM {clientnum_random}")
 
     # TAMPILKAN DATA YANG SUDAH DITAMBAHKAN
     if "alternatif_baru" in st.session_state:
