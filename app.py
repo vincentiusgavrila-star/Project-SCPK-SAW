@@ -35,29 +35,19 @@ html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
 
-.main {
-    background-color: #F0F4F8;
+/* ---- Force light background on entire app ---- */
+.stApp, .main, [data-testid="stAppViewContainer"],
+[data-testid="stAppViewBlockContainer"] {
+    background-color: #F0F4F8 !important;
+    color: #1E293B !important;
 }
 
-[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0A2463 0%, #0D2F7A 60%, #0E3580 100%);
-    border-right: 3px solid #C9A84C;
+/* ---- All paragraph/span text ---- */
+p, span, div, li, td, th {
+    color: #1E293B !important;
 }
 
-[data-testid="stSidebar"] .stRadio label {
-    color: #E8EDF5 !important;
-    font-size: 0.92rem;
-    padding: 6px 4px;
-}
-
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 {
-    color: #C9A84C !important;
-    font-family: 'Playfair Display', serif;
-    letter-spacing: 0.5px;
-}
-
+/* ---- Headings ---- */
 h1 {
     color: #0A2463 !important;
     font-family: 'Playfair Display', serif !important;
@@ -72,15 +62,122 @@ h2, h3 {
     font-weight: 700 !important;
 }
 
+/* ---- Input fields: text input & number input ---- */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea,
+[data-testid="stTextInput"] input,
+[data-testid="stNumberInput"] input,
+[data-testid="stTextArea"] textarea {
+    background-color: #FFFFFF !important;
+    color: #0A2463 !important;
+    border: 1.5px solid #C9A84C88 !important;
+    border-radius: 8px !important;
+}
+
+input:disabled,
+[data-testid="stTextInput"] input:disabled {
+    background-color: #EEF2FF !important;
+    color: #475569 !important;
+    opacity: 1 !important;
+}
+
+/* ---- Input labels ---- */
+[data-testid="stTextInput"] label,
+[data-testid="stNumberInput"] label,
+[data-testid="stTextArea"] label,
+[data-testid="stSelectbox"] label,
+[data-testid="stSlider"] label,
+.stTextInput label,
+.stNumberInput label,
+.stSlider label,
+.stSelectbox label,
+label {
+    color: #0A2463 !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+}
+
+/* ---- Slider track & value ---- */
+[data-testid="stSlider"] .stSlider,
+[data-testid="stSlider"] p,
+[data-testid="stSlider"] span {
+    color: #0A2463 !important;
+}
+
+/* ---- Number input +/- buttons ---- */
+[data-testid="stNumberInput"] button {
+    background-color: #EEF2FF !important;
+    color: #0A2463 !important;
+    border: 1px solid #C9A84C66 !important;
+}
+
+/* ---- Selectbox ---- */
+[data-testid="stSelectbox"] > div > div {
+    background-color: #FFFFFF !important;
+    color: #0A2463 !important;
+    border: 1.5px solid #C9A84C88 !important;
+}
+
+/* ---- Form container ---- */
+[data-testid="stForm"] {
+    background: #FFFFFF !important;
+    border: 1px solid #C9A84C55;
+    border-radius: 12px;
+    padding: 1.5rem !important;
+    box-shadow: 0 2px 8px rgba(10,36,99,0.08);
+}
+
+/* ---- st.write / st.text ---- */
+[data-testid="stText"],
+[data-testid="stMarkdown"] p,
+[data-testid="stMarkdown"] li,
+[data-testid="stMarkdown"] span {
+    color: #1E293B !important;
+}
+
+/* ---- Success / warning / info banners ---- */
+[data-testid="stAlert"] p,
+[data-testid="stAlert"] span {
+    color: #1E293B !important;
+}
+
+/* ---- Sidebar ---- */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0A2463 0%, #0D2F7A 60%, #0E3580 100%) !important;
+    border-right: 3px solid #C9A84C;
+}
+
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] div,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] .stRadio label {
+    color: #E8EDF5 !important;
+}
+
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: #C9A84C !important;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 0.5px;
+}
+
+/* ---- Metric cards ---- */
 [data-testid="metric-container"] {
-    background: linear-gradient(135deg, #0A2463 0%, #1E4DB7 100%);
+    background: linear-gradient(135deg, #0A2463 0%, #1E4DB7 100%) !important;
     border: 1px solid #C9A84C;
     border-radius: 12px;
     padding: 16px !important;
     box-shadow: 0 4px 12px rgba(10,36,99,0.18);
 }
 
-[data-testid="metric-container"] label {
+[data-testid="metric-container"] label,
+[data-testid="metric-container"] p,
+[data-testid="metric-container"] span {
     color: #C9A84C !important;
     font-size: 0.78rem !important;
     font-weight: 600 !important;
@@ -88,16 +185,18 @@ h2, h3 {
     letter-spacing: 1px;
 }
 
-[data-testid="metric-container"] [data-testid="stMetricValue"] {
+[data-testid="metric-container"] [data-testid="stMetricValue"],
+[data-testid="metric-container"] [data-testid="stMetricValue"] * {
     color: #FFFFFF !important;
     font-size: 2rem !important;
     font-weight: 700 !important;
 }
 
+/* ---- Buttons ---- */
 .stButton button {
     border-radius: 8px;
-    background: linear-gradient(135deg, #0A2463 0%, #1E4DB7 100%);
-    color: white;
+    background: linear-gradient(135deg, #0A2463 0%, #1E4DB7 100%) !important;
+    color: white !important;
     border: 1px solid #C9A84C;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -106,38 +205,34 @@ h2, h3 {
 }
 
 .stButton button:hover {
-    background: linear-gradient(135deg, #C9A84C 0%, #F0A500 100%);
-    color: #0A2463;
+    background: linear-gradient(135deg, #C9A84C 0%, #F0A500 100%) !important;
+    color: #0A2463 !important;
     border-color: #0A2463;
 }
 
+/* ---- DataFrames ---- */
 [data-testid="stDataFrame"] {
     border: 1px solid #C9A84C33;
     border-radius: 10px;
     overflow: hidden;
 }
 
-[data-testid="stForm"] {
-    background: #FFFFFF;
-    border: 1px solid #C9A84C55;
-    border-radius: 12px;
-    padding: 1.5rem !important;
-    box-shadow: 0 2px 8px rgba(10,36,99,0.08);
-}
-
+/* ---- Divider ---- */
 hr {
     border-color: #C9A84C55 !important;
     border-width: 1.5px !important;
 }
 
-.stCaption {
+/* ---- Caption ---- */
+.stCaption, [data-testid="stCaptionContainer"] p {
     color: #64748B !important;
 }
 
+/* ---- Section badge ---- */
 .section-badge {
     display: inline-block;
     background: linear-gradient(135deg, #C9A84C, #F0A500);
-    color: #0A2463;
+    color: #0A2463 !important;
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -147,6 +242,7 @@ hr {
     margin-bottom: 6px;
 }
 
+/* ---- Hero banner ---- */
 .hero-banner {
     background: linear-gradient(135deg, #0A2463 0%, #1E4DB7 60%, #0D2F7A 100%);
     border-radius: 14px;
@@ -177,7 +273,7 @@ hr {
 }
 
 .hero-banner p {
-    color: #BFD0F0;
+    color: #BFD0F0 !important;
     margin: 0;
     font-size: 0.88rem;
 }
