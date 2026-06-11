@@ -42,14 +42,37 @@ html, body, [class*="css"] {
     color: #1E293B !important;
 }
 
-/* ---- All paragraph/span text ---- */
-p, span, div, li, td, th {
+/* ---- All paragraph/span text (scoped, tidak override custom cards) ---- */
+.stApp p, .stApp li, .stApp td, .stApp th {
     color: #1E293B !important;
+}
+
+/* Khusus elemen dalam custom HTML cards — override balik ke putih/light */
+.hero-banner *,
+.hero-banner h2,
+.hero-banner p,
+.hero-banner span,
+.hero-banner div {
+    color: inherit !important;
+}
+
+.profile-card *,
+.profile-card h3,
+.profile-card p,
+.profile-card span,
+.profile-card div {
+    color: inherit !important;
+}
+
+.tech-card *,
+.tech-card span,
+.tech-card div {
+    color: inherit !important;
 }
 
 /* ---- Headings ---- */
 h1 {
-    color: #0A2463 !important;
+    color: #FFFFFF !important;
     font-family: 'Playfair Display', serif !important;
     font-size: 2rem !important;
     border-bottom: 3px solid #C9A84C;
@@ -57,7 +80,7 @@ h1 {
 }
 
 h2, h3 {
-    color: #0A2463 !important;
+    color: #FFFFFF !important;
     font-family: 'Inter', sans-serif !important;
     font-weight: 700 !important;
 }
@@ -192,22 +215,61 @@ label {
     font-weight: 700 !important;
 }
 
-/* ---- Buttons ---- */
-.stButton button {
-    border-radius: 8px;
-    background: linear-gradient(135deg, #0A2463 0%, #1E4DB7 100%) !important;
-    color: white !important;
-    border: 1px solid #C9A84C;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    padding: 0.45rem 1.2rem;
-    transition: all 0.2s ease;
+/* Container tombol */
+.stButton {
+    display: flex;
+    justify-content: center;
 }
 
-.stButton button:hover {
-    background: linear-gradient(135deg, #C9A84C 0%, #F0A500 100%) !important;
-    color: #0A2463 !important;
-    border-color: #0A2463;
+/* Tombol saja */
+.stButton > button {
+    background: linear-gradient(
+        135deg,
+        #0A2463 0%,
+        #1E4DB7 100%
+    ) !important;
+
+    color: #FFFFFF !important;
+
+    border: 2px solid #C9A84C !important;
+    border-radius: 12px !important;
+
+    padding: 0.75rem 2rem !important;
+
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+
+    box-shadow: 0 4px 12px rgba(10,36,99,0.2);
+
+    transition: all 0.25s ease;
+}
+
+/* Hover */
+.stButton > button:hover {
+    background: linear-gradient(
+        135deg,
+        #C9A84C 0%,
+        #F0A500 100%
+    ) !important;
+
+    color: #FFFFFF !important;
+
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+/* Focus */
+.stButton > button:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+[data-testid="baseButton-primary"] {
+    color: white !important;
+}
+
+[data-testid="baseButton-primary"] * {
+    color: white !important;
 }
 
 /* ---- DataFrames ---- */
@@ -225,7 +287,7 @@ hr {
 
 /* ---- Caption ---- */
 .stCaption, [data-testid="stCaptionContainer"] p {
-    color: #64748B !important;
+    color: #334155 !important;
 }
 
 /* ---- Section badge ---- */
@@ -247,12 +309,12 @@ hr {
     background: linear-gradient(135deg, #0A2463 0%, #1E4DB7 60%, #0D2F7A 100%);
     border-radius: 14px;
     padding: 1.6rem 2rem;
-    color: white;
     margin-bottom: 1.4rem;
     border: 1px solid #C9A84C55;
     box-shadow: 0 6px 24px rgba(10,36,99,0.18);
     position: relative;
     overflow: hidden;
+    color: #FFFFFF;
 }
 
 .hero-banner::before {
@@ -265,51 +327,117 @@ hr {
     opacity: 0.12;
 }
 
-.hero-banner h2 {
-    color: #C9A84C !important;
+.hero-banner h2,
+.hero-banner h2 * {
+    color: #FFFFFF !important;
     font-family: 'Playfair Display', serif !important;
     margin: 0 0 6px 0 !important;
     font-size: 1.4rem !important;
 }
 
-.hero-banner p {
+.hero-banner p,
+.hero-banner p * {
     color: #BFD0F0 !important;
     margin: 0;
     font-size: 0.88rem;
 }
 
+/* ---- Profile card ---- */
 .profile-card {
     background: linear-gradient(160deg, #0A2463 0%, #1E4DB7 100%);
     border-radius: 14px;
     padding: 1.6rem;
-    color: white;
     border: 1px solid #C9A84C;
     box-shadow: 0 6px 20px rgba(10,36,99,0.2);
     text-align: center;
+    color: #FFFFFF;
 }
 
-.profile-card h3 {
-    color: #C9A84C !important;
+.profile-card h3,
+.profile-card h3 * {
+    color: #FFFFFF !important;
     font-size: 1.05rem !important;
     margin-bottom: 8px !important;
 }
 
-.profile-card p {
-    color: #BFD0F0;
+.profile-card p,
+.profile-card p * {
+    color: #BFD0F0 !important;
     font-size: 0.85rem;
     margin: 4px 0;
 }
 
-.profile-card .role-badge {
+.profile-card strong,
+.profile-card strong * {
+    color: #C9A84C !important;
+}
+
+.profile-card .role-badge,
+.profile-card .role-badge * {
     display: inline-block;
     background: rgba(201,168,76,0.2);
     border: 1px solid #C9A84C;
-    color: #F0A500;
+    color: #F0A500 !important;
     font-size: 0.75rem;
     font-weight: 600;
     padding: 3px 12px;
     border-radius: 20px;
     margin-top: 8px;
+}
+
+/* ---- Tech stack card ---- */
+.tech-card {
+    background: linear-gradient(135deg, #0A2463, #1E4DB7);
+    border-radius: 12px;
+    padding: 1.2rem;
+    border: 1px solid #C9A84C;
+    color: #E8EDF5;
+    text-align: center;
+}
+
+.tech-card .tech-title,
+.tech-card .tech-title * {
+    color: #C9A84C !important;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0 0 8px 0;
+    display: block;
+}
+
+.tech-card .tech-item,
+.tech-card .tech-item * {
+    color: #E8EDF5 !important;
+    font-size: 0.88rem;
+    margin: 4px 0;
+    display: block;
+}
+
+/* ---- About section body text ---- */
+.about-text p,
+.about-text li {
+    color: #1E293B !important;
+}
+/* st.subheader */
+[data-testid="stMarkdownContainer"] h3 {
+    color: #0A2463 !important;
+    font-weight: 700 !important;
+}
+
+/* st.header */
+[data-testid="stMarkdownContainer"] h2 {
+    color: #0A2463 !important;
+    font-weight: 700 !important;
+}
+
+/* Judul di Sidebar */
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: #C9A84C !important;
+    font-family: 'Playfair Display', serif !important;
+    font-weight: 700 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -821,7 +949,7 @@ elif menu == "Profil Kelompok":
             st.markdown(f"""
             <div class="profile-card">
                 <h3>{anggota['Nama']}</h3>
-                <p><strong style="color:#C9A84C;">NIM</strong> &nbsp; {anggota['NIM']}</p>
+                <p><strong>NIM</strong> &nbsp; {anggota['NIM']}</p>
                 <div class="role-badge">{anggota['Peran']}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -845,18 +973,13 @@ elif menu == "Profil Kelompok":
         analis memperoleh ranking nasabah secara objektif dan terukur.
         """)
     with col2:
-        st.markdown(f"""
-        <div style="background:linear-gradient(135deg,#0A2463,#1E4DB7);
-                    border-radius:12px; padding:1.2rem; border:1px solid #C9A84C;
-                    color:white; text-align:center;">
-            <p style="color:#C9A84C; font-weight:700; font-size:0.75rem;
-                       letter-spacing:1px; text-transform:uppercase; margin:0 0 8px 0;">
-                Stack Teknologi
-            </p>
-            <p style="margin:4px 0; font-size:0.88rem;">🐍 Python</p>
-            <p style="margin:4px 0; font-size:0.88rem;">📊 Streamlit</p>
-            <p style="margin:4px 0; font-size:0.88rem;">🔢 NumPy · Pandas</p>
-            <p style="margin:4px 0; font-size:0.88rem;">📈 Matplotlib · Seaborn</p>
+        st.markdown("""
+        <div class="tech-card">
+            <span class="tech-title">Stack Teknologi</span>
+            <span class="tech-item">🐍 Python</span>
+            <span class="tech-item">📊 Streamlit</span>
+            <span class="tech-item">🔢 NumPy · Pandas</span>
+            <span class="tech-item">📈 Matplotlib · Seaborn</span>
         </div>
         """, unsafe_allow_html=True)
 
