@@ -273,17 +273,13 @@ elif menu == "Perhitungan SAW":
             disabled=True
         )
         input_data = {}
-        st.info(
-            "Masukkan nilai sesuai rentang data yang tersedia."
-        )
+
         for col, label in zip(CRITERIA_COLS,CRITERIA_LABELS):
-            min_val = float(df[col].min())
-            max_val = float(df[col].max())
             input_data[col] = st.number_input(
                 label,
-                min_value=min_val,
-                max_value=max_val,
-                value=min_val,
+                min_value=0.0,
+                value=0.0,
+                step=0.01,
                 key=f"input_{col}"
             )
         submit_alternatif = st.form_submit_button(
