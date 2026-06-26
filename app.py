@@ -223,11 +223,7 @@ label {
 
 /* Tombol saja */
 .stButton > button {
-    background: linear-gradient(
-        135deg,
-        #0A2463 0%,
-        #1E4DB7 100%
-    ) !important;
+    background: #007afc !important;
 
     color: #FFFFFF !important;
 
@@ -725,9 +721,49 @@ elif menu == "Perhitungan SAW":
             pd.DataFrame([st.session_state["alternatif_baru"]]),
             use_container_width=True
         )
-        if st.button("🗑️ Hapus Alternatif"):
-            del st.session_state["alternatif_baru"]
-            st.rerun()
+
+        col_upd, col_del = st.columns([1, 1])
+        with col_upd:
+            if st.button("✏️ Edit Alternatif"):
+                st.session_state["mode_edit"] = not st.session_state.get("mode_edit", False)
+        with col_del:
+            if st.button("🗑️ Hapus Alternatif"):
+                del st.session_state["alternatif_baru"]
+                st.session_state.pop("mode_edit", None)
+                st.rerun()
+
+        # ---- Form UPDATE ----
+        if st.session_state.get("mode_edit", False):
+            st.markdown('<span class="section-badge">Update</span>', unsafe_allow_html=True)
+            st.subheader("Update Alternatif")
+
+            existing = st.session_state["alternatif_baru"]
+            with st.form("form_update_alternatif"):
+                st.text_input(
+                    "CLIENTNUM",
+                    value=str(existing["CLIENTNUM"]),
+                    disabled=True
+                )
+
+                updated_data = {}
+                for col, label in zip(CRITERIA_COLS, CRITERIA_LABELS):
+                    updated_data[col] = st.number_input(
+                        label,
+                        min_value=0.0,
+                        value=float(existing.get(col, 0.0)),
+                        step=0.01,
+                        key=f"update_{col}"
+                    )
+
+                submit_update = st.form_submit_button("💾 Simpan Perubahan")
+
+            if submit_update:
+                updated = {"CLIENTNUM": existing["CLIENTNUM"]}
+                updated.update(updated_data)
+                st.session_state["alternatif_baru"] = updated
+                st.session_state["mode_edit"] = False
+                st.success(f"✅ Alternatif **{existing['CLIENTNUM']}** berhasil diperbarui!")
+                st.rerun()
 
     st.divider()
 
